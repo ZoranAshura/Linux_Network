@@ -110,7 +110,8 @@ Ping the connection between the machines
 
 ### 3.2. iperf3 utility
 
-    to download the iperf 3 utility, I switched the network from internal to nat in order to have internet access
+> To download the iperf 3 utility, I switched the
+> network from internal to nat in order to have internet access
 
 Measure connection speed between ws1 and ws2
 ![client](./images/part_3/3.2.1.png)
