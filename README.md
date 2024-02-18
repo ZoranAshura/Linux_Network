@@ -69,7 +69,7 @@ the following addresses and masks: ws1 - 192.168.100.10, mask */16 *, ws2 - 172.
 > The network interface `enp0s#` is a modern Linux network interface
 > naming convention. It is part of the Predictable Network Interface
 > Names scheme, which provides a consistent and predictable naming
-> pattern for network interfaces. The name `enp0s9` is derived from the
+> pattern for network interfaces. The name `enp0s#` is derived from the
 > following components:
 > 
 > -   `en`: Denotes Ethernet.
@@ -116,3 +116,116 @@ Ping the connection between the machines
 Measure connection speed between ws1 and ws2
 ![client](./images/part_3/3.2.1.png)
 ![server](./images/part_3/3.2.2.png)
+
+## Part 4. Network firewall
+
+### 4.1. iptables utility
+
+Create a /etc/firewall.sh file simulating the firewall on ws1 and ws2:
+
+1) open access on machines for port 22 (ssh) and port 80 (http);
+2) reject echo reply (machine must not ping, i.e. there must be a lock on OUTPUT);
+3) allow echo reply (machine must be pinged);
+
+- on ws1 apply a strategy where a deny rule is written at the beginning and an allow rule is written at the end (this applies to points 4 and 5);
+![iptables_ws1](./images/part_4/4.1.1.png)
+
+- on ws2 apply a strategy where an allow rule is written at the beginning and a deny rule is written at the end (this applies to points 4 and 5);
+![iptables_ws2](./images/part_4/4.1.2.png)
+
+Run the files on both machines with chmod +x /etc/firewall.sh and /etc/firewall.sh commands.
+![cmod_x](./images/part_4/4.1.3.png)
+![just_x](./images/part_4/4.1.4.png)
+
+> on the first machine (ws1) echo-reply will be rejected, on the secoond - the exat opposite 
+
+### 4.2. nmap utility
+
+Use ping command to find a machine which is not pinged, then use nmap utility to show that the machine host is up
+![nmap](./images/part_4/4.1.5.png)
+
+## Part 5. Static network routing
+
+![virtual_lab](./images/part_5/5.0.1.png)
+
+5.1. Configuration of machine addresses 
+
+**- ws22**
+![virtual_lab](./images/part_5/5.1.1.png)
+
+**- ws21**
+![virtual_lab](./images/part_5/5.1.2.png)
+
+**- rt1**
+![virtual_lab](./images/part_5/5.1.3.png)
+
+**- rt2**
+![virtual_lab](./images/part_5/5.1.4.png)
+
+**- ws11**
+![virtual_lab](./images/part_5/5.1.5.png)
+
+Restart the network service. If there are no errors, check that the machine address is correct with the ip -4 acommand. Also ping ws22 from ws21. Similarly ping r1 from ws11.
+
+![ping_ws22](./images/part_5/5.1.6.png)
+![ping_rt1](./images/part_5/5.1.7.png)
+
+### 5.2. Enabling IP forwarding.
+
+> `IP forwarding,` also known as IP packet forwarding, is a function in
+> network routers that allows the device to send data from one network
+> segment to another. In the context of Linux, IP forwarding refers to
+> the ability of the kernel to forward network packets from one network
+> interface to another. This feature is essential for routing network
+> traffic between different networks, enabling communication between
+> subnets, and acting as a gateway.
+
+To enable IP forwarding, run the following command on the routers:
+![ip_forwarding_rt1](./images/part_5/5.2.1.png)
+![ip_forwarding__rt2](./images/part_5/5.2.2.png)
+
+Open /etc/sysctl.conf file and add the following line:
+![ip_forwarding_rt1_file](./images/part_5/5.2.3.png)
+![ip_forwarding__rt2_file](./images/part_5/5.2.4.png)
+> `sysctl -p` this command is used to apply sysctl settings from the configuration file 
+
+### 5.3. Default route configuration
+
+Configure the default route (gateway) for the workstations. To do this, add default before the router's IP in the configuration file
+![default_route_ws11](./images/part_5/5.3.1.png)
+![default_route_ws22](./images/part_5/5.3.2.png)
+![default_route_ws21](./images/part_5/5.3.2.png)
+
+Call ip r and show that a route is added to the routing table
+![default_route_ws11-r](./images/part_5/5.3.4.png)
+![default_route_ws22-r](./images/part_5/5.3.5.png)
+![default_route_ws21-r](./images/part_5/5.3.6.png)
+
+Ping r2 router from ws11 and show on r2 that the ping is reaching. To do this, use the tcpdump -tn -i eth0
+![default_route_ws21-r](./images/part_5/5.3.7.png)
+
+### 5.4. Adding static routes
+
+Add static routes to r1 and r2 in configuration file.
+![static_route_rt1](./images/part_5/5.4.1.png)
+![static_route_rt2](./images/part_5/5.4.2.png)
+
+Call ip r and show route tables on both routers.
+![ip_route_rt1](./images/part_5/5.4.3.png)
+![ip_route_rt2](./images/part_5/5.4.4.png)
+
+Run ip r list 10.10.0.0/[18] and ip r list 0.0.0.0/0 commands on ws11.
+![ip_route_list_ws11](./images/part_5/5.4.5.png)
+
+
+> In the context of routing, the source IP address is used to specify
+> the IP address of the network interface that is used to send traffic
+> from the local system to a remote destination. The source IP address
+> is used to identify the sender of the traffic and to ensure that the
+> response traffic is sent back to the correct network interface. 
+> 
+> A default route is a route that is used when no other route is available
+> for a destination IP address. It is a catch-all route for any traffic
+> that does not match a more specific route. The default route is
+> typically used to send traffic to the default gateway for all other
+> destinations, such as the Internet or a wide area network.
