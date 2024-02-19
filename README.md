@@ -194,7 +194,7 @@ Open /etc/sysctl.conf file and add the following line:
 Configure the default route (gateway) for the workstations. To do this, add default before the router's IP in the configuration file
 ![default_route_ws11](./images/part_5/5.3.1.png)
 ![default_route_ws22](./images/part_5/5.3.2.png)
-![default_route_ws21](./images/part_5/5.3.2.png)
+![default_route_ws21](./images/part_5/5.3.3.png)
 
 Call ip r and show that a route is added to the routing table
 ![default_route_ws11-r](./images/part_5/5.3.4.png)
@@ -229,3 +229,30 @@ Run ip r list 10.10.0.0/[18] and ip r list 0.0.0.0/0 commands on ws11.
 > that does not match a more specific route. The default route is
 > typically used to send traffic to the default gateway for all other
 > destinations, such as the Internet or a wide area network.
+
+### 5.5 Making a router list
+
+Run the tcpdump -tnv -i eth0 dump command on r1
+Use traceroute utility to list routers in the path from ws11 to ws21
+![traceroute_ws11_to_ws21](./images/part_5/5.5.1.png)
+![tcpdump_rt1](./images/part_5/5.5.2.png)
+
+>   It works by sending ICMP (Internet Control Message Protocol) echo
+> request packets with increasing Time-to-Live (TTL) values. Each router
+> along the path decrements the TTL value by one before forwarding the
+> packet. When the TTL reaches zero, the router discards the packet and
+> sends an ICMP Time Exceeded message back to the source. Traceroute
+> uses these messages to determine the time it takes for each hop and to
+> build a list of routers along the path
+
+### 5.6. Using ICMP protocol in routing
+
+Run on r1 network traffic capture going through eth0 with the
+tcpdump -n -i eth0 icmp command.
+
+Ping a non-existent IP (e.g. 10.30.0.111) from ws11 with the
+ping -c 1 10.30.0.111 command.
+
+![ping_non_existent_IP](./images/part_5/5.5.3.png)
+![tcpdump_enp0s3](./images/part_5/5.5.4.png)
+
