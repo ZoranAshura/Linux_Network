@@ -256,3 +256,44 @@ ping -c 1 10.30.0.111 command.
 ![ping_non_existent_IP](./images/part_5/5.5.3.png)
 ![tcpdump_enp0s3](./images/part_5/5.5.4.png)
 
+## Part 6. Dynamic IP configuration using DHCP
+
+
+![dhcp_service_status_beginnnig](./images/part_6/6.1.png)
+
+For r2, configure the DHCP service in the /etc/dhcp/dhcpd.conf file:
+- specify the interfaces dhcpd should listen to
+![configure-/etc/default/isc-dhcp-server](./images/part_6/6.2.png)
+
+- configure-/etc/dhcp/dhcpd.conf file
+![configure-/etc/dhcp/dhcpd.conf](./images/part_6/6.3.png)
+
+- configure nameserver in a resolv.conf file
+![configure-/etc/resolv.conf](./images/part_6/6.4.png)
+
+- restart dhcp-service
+![restart-dhcp](./images/part_6/6.5.png)
+
+- specify dhcp.service = true
+![dhcp=true](./images/part_6/6.6.png)
+
+- checking the new ip address
+![new_ip_from_dhcp](./images/part_6/6.7.png)
+
+- ping ws22 machine 
+![ping_ws22](./images/part_6/6.8.png)
+
+Specify MAC address at ws11 by adding to etc/netplan/00-installer-config.yaml:
+
+- configure host-fantasia (rt1)
+![configure-host-fantasia](./images/part_6/6.9.png)
+
+- specify macaddress (ws11)
+![mac-netplan](./images/part_6/6.10.png)
+![mac-vb](./images/part_6/6.11.png)
+
+- checking the new ip address
+![new_ip_ws11](./images/part_6/6.12.png)
+
+- I can't request the new ip address cause i addeded static ip address (it'll be the same address)
+![request_failed](./images/part_6/6.13.png)
