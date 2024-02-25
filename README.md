@@ -300,7 +300,7 @@ Specify MAC address at ws11 by adding to etc/netplan/00-installer-config.yaml:
 ## Part 7. NAT
 
 In /etc/apache2/ports.conf file change the line Listen 80 to Listen 0.0.0.0:80on ws22 and r1, i.e. make the Apache2 server public
-![port:80-rt1](./images/part_7/7.1.1.png)
+![port:80-rt1](./images/part_7/7.1.1..png)
 ![port:80-ws22](./images/part_7/7.1.2.png)
 
 Start the Apache web server with service apache2 start command on ws22 and r1
