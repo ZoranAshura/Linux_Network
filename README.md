@@ -258,7 +258,6 @@ ping -c 1 10.30.0.111 command.
 
 ## Part 6. Dynamic IP configuration using DHCP
 
-
 ![dhcp_service_status_beginnnig](./images/part_6/6.1.png)
 
 For r2, configure the DHCP service in the /etc/dhcp/dhcpd.conf file:
@@ -297,3 +296,55 @@ Specify MAC address at ws11 by adding to etc/netplan/00-installer-config.yaml:
 
 - I can't request the new ip address cause i addeded static ip address (it'll be the same address)
 ![request_failed](./images/part_6/6.13.png)
+
+## Part 7. NAT
+
+In /etc/apache2/ports.conf file change the line Listen 80 to Listen 0.0.0.0:80on ws22 and r1, i.e. make the Apache2 server public
+![port:80-rt1](./images/part_7/7.1.1.png)
+![port:80-ws22](./images/part_7/7.1.2.png)
+
+Start the Apache web server with service apache2 start command on ws22 and r1
+![apache2-start-rt1](./images/part_7/7.1.3.png)
+![apache2-start-ws22](./images/part_7/7.1.4.png)
+
+Add the following rules to the firewall, created similarly to the firewall from Part 4, on r2:
+![iptables-rt2](./images/part_7/7.1.5.png)
+
+Run the file as in Part 4
+![run-iptables-rt2](./images/part_7/7.1.6.png)
+
+Check the connection between ws22 and r1 with the ping command
+![connection-rt1-ws22](./images/part_7/7.1.7.png)
+
+allow routing of all ICMP protocol packets
+![icmp-protocol-rt2](./images/part_7/7.1.8.png)
+
+Check connection between ws22 and r1 with the ping command
+![checking-connection](./images/part_7/7.1.9.png)
+
+- enable SNAT, which is masquerade all local ip from the local network behind r2 (as defined in Part 5 - network 10.20.0.0)
+- enable DNAT on port 8080 of r2 machine and add external network access to the Apache web server running on ws22
+
+![SNAT_DNAT](./images/part_7/7.2.1.png)
+
+Check the TCP connection for SNAT by connecting from ws22 to the Apache server on r1 with the telnet [address] [port] command
+![SNAT](./images/part_7/7.2.2.png)
+![SNAT](./images/part_7/7.2.3.png)
+
+Check the TCP connection for DNAT by connecting from r1 to the Apache server on ws22 with the telnet command (address r2 and port 8080)
+![DNAT](./images/part_7/7.2.4.png)
+![DNAT](./images/part_7/7.2.5.png)
+
+## Part 8. Bonus. Introduction to SSH Tunnels
+
+Run a firewall on r2 with the rules from Part 7
+![firewall-p7](./images/part_8/8.1.png)
+
+Start the Apapche web server on ws22 on localhost only (i.e. in /etc/apache2/ports.conf file change the line Listen 80 to Listen localhost:80)
+![localhost-apache2](./images/part_8/8.2.png)
+
+Use Local TCP forwarding from ws21 to ws22 to access the web server on ws22 from ws21
+![local](./images/part_8/8.3.png)
+
+Use Remote TCP forwarding from ws11 to ws22 to access the web server on ws22 from ws11
+![remote](./images/part_8/8.4.png)
